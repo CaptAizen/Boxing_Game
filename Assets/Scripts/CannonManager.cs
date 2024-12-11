@@ -19,7 +19,7 @@ public class CannonManager : MonoBehaviour
     public Material finaleMaterial;
     public float destroyYValue = -10f; // Y value below which cannonballs are destroyed
     public GameObject entranceStairs;
-    AudioSource cannonBallMusic;
+    public AudioSource cannonBallMusic;
     public GameObject entranceText;
     public GameObject levelCompleteText;
     PlayerKeys playerKeys;
