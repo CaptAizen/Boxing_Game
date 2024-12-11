@@ -16,19 +16,60 @@ public class TargetManager : MonoBehaviour
     private int currentTargetIndex = 0;
     private bool targetActive = false;
 
+    private Queue<float> decibelLevels = new Queue<float>();
+    private const float trackingDuration = 5f; // Duration to track decibel levels (in seconds)
+    private const int sampleRate = 10; // Number of samples per second
+
     void Start()
     {
         // Initialize with the first combination
         SelectRandomCombination();
+        StartCoroutine(TrackDecibelLevels());
     }
 
     void Update()
     {
-        if (audioManager.currentDecibelLevel > -9 && !targetActive)
+        float averageDecibelLevel = CalculateAverageDecibelLevel();
+        float standardDeviation = CalculateStandardDeviation(averageDecibelLevel);
+
+        if (audioManager.currentDecibelLevel > averageDecibelLevel + 2 * standardDeviation && !targetActive)
         {
             // Activate the next target in the current combination
             ActivateNextTarget();
         }
+    }
+
+    IEnumerator TrackDecibelLevels()
+    {
+        while (true)
+        {
+            if (decibelLevels.Count >= trackingDuration * sampleRate)
+            {
+                decibelLevels.Dequeue();
+            }
+            decibelLevels.Enqueue(audioManager.currentDecibelLevel);
+            yield return new WaitForSeconds(1f / sampleRate);
+        }
+    }
+
+    float CalculateAverageDecibelLevel()
+    {
+        float sum = 0f;
+        foreach (float level in decibelLevels)
+        {
+            sum += level;
+        }
+        return sum / decibelLevels.Count;
+    }
+
+    float CalculateStandardDeviation(float average)
+    {
+        float sum = 0f;
+        foreach (float level in decibelLevels)
+        {
+            sum += Mathf.Pow(level - average, 2);
+        }
+        return Mathf.Sqrt(sum / decibelLevels.Count);
     }
 
     void SelectRandomCombination()
@@ -47,8 +88,15 @@ public class TargetManager : MonoBehaviour
         }
     }
 
-    public void TargetDestroyed()
+    public void TargetDestroyed(Target destroyedTarget)
     {
+        // Play the breaking sound effect from the destroyed target's AudioSource
+        AudioSource audioSource = destroyedTarget.GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.Play();
+        }
+
         targetActive = false;
         currentTargetIndex++;
 

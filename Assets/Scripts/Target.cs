@@ -24,7 +24,7 @@ public class Target : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Notify the TargetManager that this target is destroyed
-            targetManager.TargetDestroyed();
+            targetManager.TargetDestroyed(this);
             Hide();
         }
     }
