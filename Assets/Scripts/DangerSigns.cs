@@ -3,42 +3,65 @@ using System.Collections;
 
 public class DangerSign : MonoBehaviour
 {
-    public float Cannonballs; // Array of GameObject1 instances
+    public int Cannonballs; // Count of GameObject1 instances
     public GameObject Platform; // GameObject2 instance
     public Material whiteMaterial;
     public Material yellowMaterial;
     public Material redMaterial;
     public Material blackMaterial;
 
+    private Coroutine colorChangeCoroutine;
+
     void Update()
     {
-        float count = Cannonballs;
         Renderer renderer = Platform.GetComponent<Renderer>();
 
-        switch (count)
+        if (Cannonballs <= 5)
         {
-            case <= 5:
-                renderer.material = whiteMaterial;
-                break;
-            case > 5 and <= 10:
-                StartCoroutine(ChangeColor(renderer, whiteMaterial, yellowMaterial, 2f));
-                break;
-            case > 10 and <= 13:
-                renderer.material = yellowMaterial;
-                break;
-            case > 13 and <= 15:
-                StartCoroutine(ChangeColor(renderer, yellowMaterial, redMaterial, 2f));
-                break;
-            case > 15 and <= 17:
-                renderer.material = redMaterial;
-                break;
-            case > 17 and <= 19:
-                StartCoroutine(ChangeColor(renderer, redMaterial, blackMaterial, 1f, 2f));
-                break;
-            case 20:
-                Platform.SetActive(false);
-                break;
+            SetMaterial(renderer, whiteMaterial);
         }
+        else if (Cannonballs > 5 && Cannonballs <= 10)
+        {
+            StartColorChange(renderer, whiteMaterial, yellowMaterial, .01f);
+        }
+        else if (Cannonballs > 10 && Cannonballs <= 13)
+        {
+            SetMaterial(renderer, yellowMaterial);
+        }
+        else if (Cannonballs > 13 && Cannonballs <= 15)
+        {
+            StartColorChange(renderer, yellowMaterial, redMaterial, .01f);
+        }
+        else if (Cannonballs > 15 && Cannonballs <= 17)
+        {
+            SetMaterial(renderer, redMaterial);
+        }
+        else if (Cannonballs > 17 && Cannonballs <= 19)
+        {
+            StartColorChange(renderer, redMaterial, blackMaterial, .01f);
+        }
+        else if (Cannonballs == 20)
+        {
+            Platform.SetActive(false);
+        }
+    }
+
+    void SetMaterial(Renderer renderer, Material material)
+    {
+        if (colorChangeCoroutine != null)
+        {
+            StopCoroutine(colorChangeCoroutine);
+        }
+        renderer.material = material;
+    }
+
+    void StartColorChange(Renderer renderer, Material firstMaterial, Material secondMaterial, float duration1, float duration2 = 0f)
+    {
+        if (colorChangeCoroutine != null)
+        {
+            StopCoroutine(colorChangeCoroutine);
+        }
+        colorChangeCoroutine = StartCoroutine(ChangeColor(renderer, firstMaterial, secondMaterial, duration1, duration2));
     }
 
     IEnumerator ChangeColor(Renderer renderer, Material firstMaterial, Material secondMaterial, float duration1, float duration2 = 0f)
@@ -55,11 +78,12 @@ public class DangerSign : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("CannonBall"))
+        if (other.CompareTag("CannonBall"))
         {
             Cannonballs += 1;
         }
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CannonBall"))
@@ -68,4 +92,3 @@ public class DangerSign : MonoBehaviour
         }
     }
 }
-

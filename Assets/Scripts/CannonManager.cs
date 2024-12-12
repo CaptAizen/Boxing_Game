@@ -53,14 +53,15 @@ public class CannonManager : MonoBehaviour
             // Apply a random material
             Renderer renderer = cannonball.GetComponent<Renderer>();
             renderer.material = materials[Random.Range(0, materials.Length)];
+            Rigidbody rb = cannonball.GetComponent<Rigidbody>();  
             if (ballsFired == maxBalls - 1)
             {
                 renderer.material = finaleMaterial;
+                rb.mass = 10000;
             }
 
             // Calculate the initial velocity
             Vector3 direction = Quaternion.Euler(0, cannon.angle, 0) * Vector3.forward;
-            Rigidbody rb = cannonball.GetComponent<Rigidbody>();
             rb.velocity = direction * initialSpeed;
 
             // Start coroutine to check for destruction
