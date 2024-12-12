@@ -23,6 +23,8 @@ public class CannonManager : MonoBehaviour
     public GameObject entranceText;
     public GameObject levelCompleteText;
     PlayerKeys playerKeys;
+    DangerSign dangerSign;
+    public float VolumeStopSpeed;
 
 
     private int ballsFired = 0;
@@ -67,11 +69,12 @@ public class CannonManager : MonoBehaviour
             ballsFired++;
             yield return new WaitForSeconds(fireDelay);
 
-            if (ballsFired == maxBalls)
+            if (ballsFired == maxBalls && dangerSign.Cannonballs <= 1)
             {
                 entranceStairs.SetActive(true);
                 levelCompleteText.SetActive(true);
                 playerKeys.Positivity = true;
+                StartCoroutine(MusicStopper());
             }
         }
     }
@@ -83,5 +86,13 @@ public class CannonManager : MonoBehaviour
             yield return null;
         }
         Destroy(cannonball);
+    }
+    IEnumerator MusicStopper()
+    {
+        while (cannonBallMusic.volume > 0)
+        {
+            cannonBallMusic.volume -= VolumeStopSpeed;
+        }
+        yield break;
     }
 }
