@@ -27,7 +27,7 @@ public class CannonManager : MonoBehaviour
     public float VolumeStopSpeed;
 
 
-    private int ballsFired = 0;
+    public int ballsFired = 0;
 
     void OnTriggerEnter(Collider other)
     {
@@ -42,7 +42,7 @@ public class CannonManager : MonoBehaviour
 
     IEnumerator FireCannonballs()
     {
-        while (ballsFired < maxBalls)
+        while (ballsFired <= maxBalls)
         {
             // Choose a random cannon
             Cannon cannon = cannons[Random.Range(0, cannons.Length)];
@@ -57,7 +57,7 @@ public class CannonManager : MonoBehaviour
             if (ballsFired == maxBalls - 1)
             {
                 renderer.material = finaleMaterial;
-                rb.mass = 10000;
+                rb.mass = 1000000;
             }
 
             // Calculate the initial velocity

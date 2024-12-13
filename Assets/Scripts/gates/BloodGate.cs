@@ -9,6 +9,7 @@ public class Gate : MonoBehaviour
     private Vector3 startPosition;
     private float elapsedTime;
     private bool gatePassed = false;
+    PlayerKeys playerKeys;
 
     void Start()
     {
@@ -17,12 +18,15 @@ public class Gate : MonoBehaviour
 
     IEnumerator GateMoving()
     {
-        while (elapsedTime < desiredDuration)
+        if (playerKeys.Courage)
         {
-            elapsedTime += Time.deltaTime;
-            float percentageComplete = elapsedTime / desiredDuration;
-            transform.position = Vector3.Lerp(startPosition, endPosition, percentageComplete);
-            yield return null;
+            while (elapsedTime < desiredDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float percentageComplete = elapsedTime / desiredDuration;
+                transform.position = Vector3.Lerp(startPosition, endPosition, percentageComplete);
+                yield return null;
+            }
         }
     }
 
