@@ -25,6 +25,7 @@ public class CannonManager : MonoBehaviour
     PlayerKeys playerKeys;
     DangerSign dangerSign;
     public float VolumeStopSpeed;
+    bool levelComplete = false;
 
 
     public int ballsFired = 0;
@@ -41,9 +42,11 @@ public class CannonManager : MonoBehaviour
     }
 
     IEnumerator FireCannonballs()
-    {
-        while (ballsFired <= maxBalls)
+    {  
+        while (ballsFired < maxBalls)
         {
+            
+            Debug.Log("Whileloop is running");
             // Choose a random cannon
             Cannon cannon = cannons[Random.Range(0, cannons.Length)];
 
@@ -57,7 +60,7 @@ public class CannonManager : MonoBehaviour
             if (ballsFired == maxBalls - 1)
             {
                 renderer.material = finaleMaterial;
-                rb.mass = 1000000;
+                rb.drag = 1000000;
             }
 
             // Calculate the initial velocity
@@ -69,15 +72,23 @@ public class CannonManager : MonoBehaviour
 
             ballsFired++;
             yield return new WaitForSeconds(fireDelay);
+            yield return new WaitForEndOfFrame();
 
-            if (ballsFired == maxBalls && dangerSign.Cannonballs <= 1)
+        }
+        while (levelComplete == false)
+        {Debug.Log("waiting for level complete");
+           if (ballsFired == maxBalls && dangerSign.Cannonballs <= 1)
             {
-                entranceStairs.SetActive(true);
-                levelCompleteText.SetActive(true);
-                playerKeys.Positivity = true;
-                StartCoroutine(MusicStopper());
+            Debug.Log("Level complete");
+            entranceStairs.SetActive(true);
+            levelCompleteText.SetActive(true);
+            playerKeys.Positivity = true;
+            StartCoroutine(MusicStopper());
+            levelComplete = true;
+            break;
             }
         }
+        
     }
 
     IEnumerator CheckForDestruction(GameObject cannonball)
